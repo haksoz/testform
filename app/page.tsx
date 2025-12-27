@@ -6,20 +6,33 @@ export default function Home() {
   const [formData, setFormData] = useState({ ad: '', soyad: '' });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [title, setTitle] = useState<string>('Test Form - Kayıt Formu');
+  const [title, setTitle] = useState<string>('');
+  const [titleLoading, setTitleLoading] = useState(true);
+  const [titleError, setTitleError] = useState<string | null>(null);
 
   // Sayfa yüklendiğinde veritabanından başlığı çek
   useEffect(() => {
     const fetchTitle = async () => {
       try {
+        setTitleLoading(true);
+        setTitleError(null);
         const response = await fetch('/api/settings');
         const data = await response.json();
-        if (data.success && data.title) {
-          setTitle(data.title);
+        
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Başlık yüklenemedi');
         }
-      } catch (error) {
+        
+        if (data.title) {
+          setTitle(data.title);
+        } else {
+          throw new Error('Başlık bulunamadı');
+        }
+      } catch (error: any) {
         console.error('Başlık yüklenirken hata:', error);
-        // Hata durumunda varsayılan başlık kullanılacak
+        setTitleError(error.message || 'Veritabanı bağlantısı başarısız');
+      } finally {
+        setTitleLoading(false);
       }
     };
 
@@ -54,6 +67,31 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  // Eğer başlık yükleniyorsa veya hata varsa özel görünüm
+  if (titleLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md text-center">
+          <p className="text-gray-600">Başlık yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (titleError) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
+          <div className="bg-red-100 text-red-800 border border-red-200 p-4 rounded-md">
+            <h2 className="font-bold text-lg mb-2">Hata!</h2>
+            <p className="mb-2">{titleError}</p>
+            <p className="text-sm text-red-600">Veritabanı bağlantısı kurulamadı. Lütfen daha sonra tekrar deneyin.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
