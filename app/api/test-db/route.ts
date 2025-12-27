@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
-import { pool } from '@/lib/db';
+import { getDbPool } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    // Veritabanı bağlantısını al
+    const pool = getDbPool();
+    
     // Basit bir test sorgusu
     const [rows] = await pool.execute('SELECT 1 as test');
     

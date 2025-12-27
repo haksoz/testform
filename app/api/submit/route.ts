@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { pool } from '@/lib/db';
+import { getDbPool } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +15,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Veritabanı bağlantısını al
+    const pool = getDbPool();
+    
     // Veritabanına kaydet
     const [result] = await pool.execute(
       'INSERT INTO test_form (ad, soyad) VALUES (?, ?)',

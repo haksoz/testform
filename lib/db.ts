@@ -115,10 +115,21 @@ if (!dbInitialized) {
   });
 }
 
-// Proxy kullanarak lazy initialization
+// Pool'u direkt export et
+export function getDbPool(): mysql.Pool {
+  return getPool();
+}
+
+// Eski kod uyumluluğu için pool export'u (proxy ile)
 export const pool = new Proxy({} as mysql.Pool, {
   get(target, prop) {
-    return (getPool() as any)[prop];
+    const poolInstance = getDbPool();
+    const value = (poolInstance as any)[prop];
+    // Eğer fonksiyonsa bind et
+    if (typeof value === 'function') {
+      return value.bind(poolInstance);
+    }
+    return value;
   }
 });
 

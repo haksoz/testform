@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
-import { pool } from '@/lib/db';
+import { getDbPool } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    // Veritabanı bağlantısını al
+    const pool = getDbPool();
+    
     // Settings tablosundan form_title değerini çek
     const [rows] = await pool.execute(
       'SELECT setting_value FROM settings WHERE setting_key = ?',
