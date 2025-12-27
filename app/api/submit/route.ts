@@ -28,10 +28,14 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Kayıt hatası:', error);
+    console.error('Hata detayı:', error.message);
+    console.error('Stack:', error.stack);
+    
+    // Production'da detayları gizle
     return NextResponse.json(
       {
         error: 'Kayıt sırasında bir hata oluştu',
-        details: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
       },
       { status: 500 }
     );
