@@ -16,7 +16,8 @@ let poolConfig: { host: string; user: string; password: string; database: string
 
 function getPool(): mysql.Pool {
   // Environment variables'ı runtime'da tekrar kontrol et
-  const dbHost = process.env.DB_HOST === 'localhost' ? '127.0.0.1' : (process.env.DB_HOST || "127.0.0.1");
+  // Hostinger'da genellikle localhost kullanılmalı, 127.0.0.1 yerine
+  const dbHost = process.env.DB_HOST || "localhost";
   const dbUser = process.env.DB_USER || "root";
   const dbPassword = process.env.DB_PASSWORD || "";
   const dbName = process.env.DB_NAME || "testform_db";
