@@ -4,33 +4,31 @@ import mysql from 'mysql2/promise';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const env = {
+  const runtimeEnv = {
     DB_HOST: process.env.DB_HOST || 'NOT SET',
     DB_USER: process.env.DB_USER || 'NOT SET',
-    DB_NAME: process.env.DB_NAME || 'NOT SET',
-    DB_PORT: process.env.DB_PORT || 'NOT SET',
-    DB_PASSWORD: process.env.DB_PASSWORD ? '***SET***' : 'NOT SET',
+  };
+
+  const hardcoded = {
+    DB_HOST: 'localhost',
+    DB_USER: 'u187342439_testform_user',
   };
 
   try {
     const conn = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      port: Number(process.env.DB_PORT) || 3306,
+      host: hardcoded.DB_HOST,
+      user: hardcoded.DB_USER,
+      password: '8c$Aj6Tn!SS',
+      database: 'u187342439_testform_db',
+      port: 3306,
     });
 
     await conn.ping();
     await conn.end();
 
-    return NextResponse.json({ success: true, env });
+    return NextResponse.json({ success: true, runtimeEnv, hardcoded });
   } catch (error: any) {
-    return NextResponse.json({
-      success: false,
-      error: error.message,
-      env,
-    });
+    return NextResponse.json({ success: false, error: error.message, runtimeEnv, hardcoded });
   }
 }
 
