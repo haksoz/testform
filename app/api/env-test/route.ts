@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
 console.log('🔍 RUNTIME DB Config Check:', {
 DB_HOST: process.env.DB_HOST,
